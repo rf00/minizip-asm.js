@@ -185,3 +185,4 @@ minizip.walk(data);
 2. The size of minizip-asm.js is around 1.3MB, minizip-asm.min.js is around 720KB.
 3. Sometimes fail silently.
 4. If the file is too big, browser will fail.
+5. Contents of zip contain filename which is not ASCII, not very well.
