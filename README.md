@@ -182,7 +182,7 @@ minizip.walk(data);
 ## Notice
 
 1. It is synchronize which means minizip will block the process and ui, It will be cool to put it in a web worker or fork a child process.
-2. The size of minizip-asm.js is around 1.3MB, minizip-asm.min.js is around 720KB.
+2. The size of minizip-asm.js is around 1.3MB, minizip-asm.min.js is around 0.7MB.
 3. Sometimes fail silently.
 4. If the file is too big, browser will fail.
 5. Contents of zip contain filename which is not ASCII, not very well.
