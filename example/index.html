@@ -1,0 +1,314 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
+<title>Demo of minizip-asm.js</title>
+<script src="../lib/minizip-asm.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/trianglify/0.4.0/trianglify.min.js"></script>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="file_input_example.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.2/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.2/js/jquery.iframe-transport.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.2/js/jquery.fileupload.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+</head>
+<style>
+html, body {
+	margin: 0;
+	padding: 0;
+}
+#canvas {
+	z-index: -1;
+	position: fixed;
+}
+#panel {
+	opacity: 0.5;
+}
+.bigicon {
+	font-size: 50px;
+}
+#loadingpage, #loadingpage div {
+	display: none;
+}
+::-webkit-input-placeholder {
+   text-align: center;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   text-align: center;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   text-align: center;  
+}
+
+:-ms-input-placeholder {  
+   text-align: center; 
+}
+</style>
+<body>
+<div id="canvas"></div>
+<label for="uploadfile" class="fake_file_input">
+  <input type="file" name="files[]" id="uploadfile" multiple />
+</label>
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <div id="panel" class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">minizip-asm.js</h3>
+        </div>
+        <div class="panel-body">
+          <div id="startpage">
+            <h1 class="text-center">Welcome</h1>
+            <h3 class="text-center">Enter a password and hit the button to start!</h3>
+            <br>
+            <div class="row">
+              <div class="col-xs-3"></div>
+                <div class="col-xs-6">
+                  <input type="text" class="form-control" placeholder="My Password To:" id="password">
+                </div>
+              <div class="col-xs-3"></div>
+            </div>
+            <br>
+            <div class="text-center">
+              <button id="encrypt" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-ok-circle"></span><br>Encrypt</button>
+              <button id="decrypt" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-remove-circle"></span><br>Decrypt</button>
+            </div>
+          </div>
+          <div id="loadingpage">
+            <h1 class="text-center">Loading...</h1>
+            <h4 class="text-center"></h4>
+            <h3 class="text-center"></h3>
+            <br>
+            <div class="text-center">
+              <button id="home" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-home"></span><br>Back Home</button>
+              <button id="downloadfile" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-download-alt"></span><br>Download Zip</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    makeBG();
+    makePanelHeight();
+    
+    $(window).on("resize", function() {
+    	
+    	makeBG();
+    	
+    });
+    
+    $("#panel").on("resize", function() {
+    	
+    	makePanelHeight();
+    	
+    });
+    
+    function makePanelHeight() {
+    	
+    	var panel = $("#panel");
+    	
+    	var atLeast = window.innerHeight * 0.7;
+    	
+    	if (panel.height() < atLeast) {
+    		
+    		panel.height(atLeast);
+    		
+    	}
+    	
+    }
+    
+    function makeBG() {
+    	
+    	var pattern = Trianglify({
+    		width: window.innerWidth,
+    		height: window.innerHeight
+    	});
+    	
+    	var canvas = document.getElementById("canvas");
+    	
+    	canvas.innerHTML = "";
+    	
+    	canvas.appendChild(pattern.canvas());
+    	
+    }
+    
+    var currentPage = "#startpage";
+    
+    $("#uploadfile").fileupload({
+    	
+    	autoUpload: false,
+    	
+    	change: change
+    	
+    });
+    
+    var fr;
+    
+    function change(e, data) {
+    	
+    	if (currentPage == "#startpage") {
+    		
+    		$("#startpage").hide();
+    		
+    		$("#loadingpage").show();
+    		
+    		$("#loadingpage div").hide();
+    		
+    		var file = data.files[0];
+    		
+    		fr = new FileReader();
+    		
+    		if (todo == "#encrypt") {
+    			
+    			fr.onload = encrypt;
+    			
+    		} else {
+    			
+    			fr.onload = decrypt;
+    			
+    		}
+    		
+    		fr.readAsArrayBuffer(file);
+    		
+    		return;
+    		
+    	}
+    	
+    }
+    
+    function encrypt(event) {
+    	
+    	try {
+    		
+    		var data = minizip.encrypt(new Uint8Array(event.target.result), password, 3, function(m) {
+    			
+    			var log = $("#loadingpage h4");
+    			
+    			log.append("<p>" + m + "</p>");
+    			
+    			if (log.children().length > 10) {
+    				
+    				log.find(':first-child').remove();
+    				
+    			}
+    			
+    		}, true);
+    		
+    		$("#loadingpage h1").text("Complete");
+    		
+    	} catch (e) {
+    		
+    		$("#loadingpage h1").text("Error");
+    		
+    		$("#loadingpage h3").text(e);
+    		
+    	}
+    	
+    	$("#loadingpage div").show();
+    	
+    	save(data);
+    	
+    }
+    
+    function decrypt(event) {
+    	
+    	try {
+    		
+    		var data = minizip.decrypt(new Uint8Array(event.target.result), password, 3, function(m) {
+    			
+    			var log = $("#loadingpage h4");
+    			
+    			log.append("<p>" + m + "</p>");
+    			
+    			if (log.children().length > 10) {
+    				
+    				log.find(':first-child').remove();
+    				
+    			}
+    			
+    		}, true);
+    		
+    		$("#loadingpage h1").text("Complete");
+    		
+    	} catch (e) {
+    		
+    		$("#loadingpage h1").text("Error");
+    		
+    		$("#loadingpage h3").text(e);
+    		
+    	}
+    	
+    	$("#loadingpage div").show();
+    	
+    	save(data);
+    	
+    }
+    
+    var savedata;
+    
+    function save(data) {
+    	
+    	var blob = new Blob([data], { type: 'application/octet-binary' });
+    	
+    	savedata = blob;
+    	
+    }
+    
+    $("#home").on("click", function() {
+    	
+    	$("#startpage").show();
+    	
+    	$("#loadingpage").hide();
+    	
+    	$("#password").val("");
+    	
+    	$("#loadingpage h1").text("Loading...");
+    	
+    	$("#loadingpage h4").empty();
+    	
+    	$("#loadingpage h3").empty();
+    	
+    	savedata = undefined;
+    	
+    });
+    
+    $("#downloadfile").on("click", function() {
+    	
+    	saveAs(savedata, "file.zip");
+    	
+    });
+    
+    var todo = "#encrypt";
+    
+    var password = "";
+    
+    $("#encrypt").on("click", function() {
+    	
+    	todo = "#encrypt";
+    	
+    	password = $("#password").val();
+    	
+    	$("#uploadfile").click();
+    	
+    });
+    
+    $("#decrypt").on("click", function() {
+    	
+    	todo = "#decrypt";
+    	
+    	password = $("#password").val();
+    	
+    	$("#uploadfile").click();
+    	
+    });
+    
+</script>
+</body>
+</html>

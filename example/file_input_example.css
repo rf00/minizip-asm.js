@@ -1,0 +1,53 @@
+.fake_file_input {
+  background: url(../images/fake_file_input.png) no-repeat;
+  cursor: pointer;
+  width: 150px;
+  height: 30px;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+}
+
+.fake_file_input input {
+  position: absolute;
+  top: 0;
+  left: -99999px;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+}
+
+/*
+  Hack for Firefox:
+
+*/
+
+@-moz-document url-prefix() {
+  .fake_file_input input {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 150px;
+    height: 30px;
+  }
+}
+
+/*
+  Degrade for IE6:
+*/
+
+* html .fake_file_input {
+  background: none;
+  cursor: default;
+  overflow: visible;
+  position: static;
+  width: auto;
+  height: auto;
+}
+
+* html .fake_file_input input {
+  position: static;
+  filter: alpha(opacity=100);
+}

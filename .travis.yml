@@ -1,0 +1,7 @@
+language: node_js
+deploy:
+  provider: npm
+  email: rf00mail@gmail.com
+  api_key: $NPM_TOKEN
+  on:
+    tags: false

@@ -1,0 +1,49 @@
+{
+  "name": "minizip-asm.js",
+  "version": "0.0.1",
+  "description": "An emscripten port of minizip demo. Minizip is a higher level wrapper of zlib providing simple api for zip file compression and encryption.",
+  "main": "lib/minizip-asm.js",
+  "scripts": {
+    "build": "cd src && sh build.sh",
+    "finalbuild": "npm install && webpack && webpack --mode=build",
+    "dev": "webpack --progress --colors --watch --mode=dev",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "devDependencies": {
+    "babel": "6.3.13",
+    "babel-core": "6.1.18",
+    "babel-eslint": "5.0.0",
+    "babel-loader": "6.1.0",
+    "babel-plugin-add-module-exports": "0.1.2",
+    "babel-preset-es2015": "6.3.13",
+    "chai": "3.4.1",
+    "eslint": "1.7.2",
+    "eslint-loader": "1.1.0",
+    "mocha": "2.3.4",
+    "webpack": "1.12.9",
+    "yargs": "3.32.0",
+    "buffer": "5.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rf00/minizip-asm.js.git"
+  },
+  "keywords": [
+    "zip",
+    "unzip",
+    "compress",
+    "decompress",
+    "encrypt",
+    "decrypt",
+    "password",
+    "emscripten",
+    "asm",
+    "zlib"
+  ],
+  "author": "rf00 <rf00mail@gmail.com>",
+  "license": "zlib like",
+  "bugs": {
+    "url": "https://github.com/rf00/minizip-asm.js/issues"
+  },
+  "homepage": "https://github.com/rf00/minizip-asm.js"
+}
