@@ -6,7 +6,7 @@ An emscripten port of minizip demo. Minizip is a higher level wrapper of zlib pr
 
 ## Demo
 
-[Demo of encrypt and decrypt](https://rf00.github.io/minizip-asm.js/example/index.html)
+[Demo of encrypt and decrypt](https://rf00.github.io/minizip-asm.js/example/)
 
 ## Features
 
