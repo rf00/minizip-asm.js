@@ -15,6 +15,8 @@ An emscripten port of minizip demo. Minizip is a higher level wrapper of zlib pr
 
 ## Installation
 
+[Download as zip](https://github.com/rf00/minizip-asm.js/archive/master.zip)
+
 ```html
 <script src="path/to/lib/minizip-asm.min.js"></script>
 ```
