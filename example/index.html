@@ -148,9 +148,7 @@ html, body {
     	change: change
     	
     });
-    
-    var fr;
-    
+        
     function change(e, data) {
     	
     	if (currentPage == "#startpage") {
@@ -163,7 +161,7 @@ html, body {
     		
     		var file = data.files[0];
     		
-    		fr = new FileReader();
+    		var fr = new FileReader();
     		
     		if (todo == "#encrypt") {
     			
