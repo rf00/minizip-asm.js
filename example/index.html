@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
 <title>Demo of minizip-asm.js - encrypt and decrypt existing zip file</title>
+<script src="../lib/minizip-asm.min.js"></script>
 <script src="operative.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/trianglify/0.4.0/trianglify.min.js"></script>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
@@ -77,6 +78,11 @@ html, body {
             <div class="text-center">
               <button id="encrypt" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-ok-circle"></span><br>Encrypt</button>
               <button id="decrypt" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-remove-circle"></span><br>Decrypt</button>
+            </div>
+            <br>
+            <div class="text-center">
+              <input type="checkbox" id="inwebworker">
+              <span> in WebWorker</span>
             </div>
           </div>
           <div id="loadingpage">
@@ -161,13 +167,29 @@ html, body {
     		
     		var file = data.files[0];
     		
+    		if (!$("inwebworker").checked) {
+    			
+    			if (todo == "#encrypt") {
+    				
+    				encrypt(file, password, 3, true, cb);
+    				
+    			} else {
+    				
+    				decrypt(file, password, 3, true, cb);
+    				
+    			}
+    			
+    			return;
+    			
+    		}
+    		
     		if (todo == "#encrypt") {
     			
-    			encrypt(file);
+    			encryptO(file, password, 3, true, cb);
     			
     		} else {
     			
-    			decrypt(file);
+    			decryptO(file, password, 3, true, cb);
     			
     		}
     		
@@ -227,15 +249,55 @@ html, body {
     	
     }, ["../lib/minizip-asm.min.js"]);
     
-    function encrypt(file) {
+    function encrypt(file, password, perf, noBuf, cb) {
     	
-    	encryptO(file, password, 3, true, cb);
+    	var fr = new FileReader();
+    	
+    	fr.onload = function(event) {
+    		
+    		try {
+    			
+    			var data = minizip.encrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			
+    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			
+    			cb(null, null, file);
+    			
+    		} catch (e) {
+    			
+    			cb(null, e);
+    			
+    		}
+    		
+    	}
+    	
+    	fr.readAsArrayBuffer(file);
     	
     }
     
-    function decrypt(file) {
+    function decrypt(file, password, perf, noBuf, cb) {
     	
-    	decryptO(file, password, 3, true, cb);
+    	var fr = new FileReader();
+    	
+    	fr.onload = function(event) {
+    		
+    		try {
+    			
+    			var data = minizip.decrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			
+    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			
+    			cb(null, null, file);
+    			
+    		} catch (e) {
+    			
+    			cb(null, e);
+    			
+    		}
+    		
+    	}
+    	
+    	fr.readAsArrayBuffer(file);
     	
     }
     
