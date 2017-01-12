@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
 <title>Demo of minizip-asm.js - encrypt and decrypt existing zip file</title>
-<script src="../lib/minizip-asm.min.js"></script>
+<script src="operative.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/trianglify/0.4.0/trianglify.min.js"></script>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -82,7 +82,7 @@ html, body {
           <div id="loadingpage">
             <h1 class="text-center">Loading...</h1>
             <h4 class="text-center"></h4>
-            <h3 class="text-center"></h3>
+            <p class="text-center"></p>
             <br>
             <div class="text-center">
               <button id="home" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-home"></span><br>Back Home</button>
@@ -114,7 +114,7 @@ html, body {
     	
     	var panel = $("#panel");
     	
-    	var atLeast = window.innerHeight * 0.7;
+    	var atLeast = window.innerHeight * 0.8;
     	
     	if (panel.height() < atLeast) {
     		
@@ -161,101 +161,125 @@ html, body {
     		
     		var file = data.files[0];
     		
-    		var fr = new FileReader();
-    		
     		if (todo == "#encrypt") {
     			
-    			fr.onload = encrypt;
+    			encrypt(file);
     			
     		} else {
     			
-    			fr.onload = decrypt;
+    			decrypt(file);
     			
     		}
     		
-    		fr.readAsArrayBuffer(file);
-    		
-    		return;
-    		
     	}
     	
     }
     
-    function encrypt(event) {
+    var encryptO = operative(function(file, password, perf, noBuf, cb) {
     	
-    	try {
+    	var fr = new FileReader();
+    	
+    	fr.onload = function(event) {
     		
-    		var data = minizip.encrypt(new Uint8Array(event.target.result), password, 3, function(m) {
+    		try {
     			
-    			var log = $("#loadingpage h4");
+    			var data = minizip.encrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
     			
-    			log.append("<p>" + m + "</p>");
+    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
     			
-    			if (log.children().length > 10) {
-    				
-    				log.find(':first-child').remove();
-    				
-    			}
+    			cb(null, null, file);
     			
-    		}, true);
-    		
-    		$("#loadingpage h1").text("Complete");
-    		
-    	} catch (e) {
-    		
-    		$("#loadingpage h1").text("Error");
-    		
-    		$("#loadingpage h3").text(e);
+    		} catch (e) {
+    			
+    			cb(null, e);
+    			
+    		}
     		
     	}
     	
-    	$("#loadingpage div").show();
+    	fr.readAsArrayBuffer(file);
     	
-    	save(data);
+    }, ["../lib/minizip-asm.min.js"]);
+    
+    var decryptO = operative(function(file, password, perf, noBuf, cb) {
+    	
+    	var fr = new FileReader();
+    	
+    	fr.onload = function(event) {
+    		
+    		try {
+    			
+    			var data = minizip.decrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			
+    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			
+    			cb(null, null, file);
+    			
+    		} catch (e) {
+    			
+    			cb(null, e);
+    			
+    		}
+    		
+    	}
+    	
+    	fr.readAsArrayBuffer(file);
+    	
+    }, ["../lib/minizip-asm.min.js"]);
+    
+    function encrypt(file) {
+    	
+    	encryptO(file, password, 3, true, cb);
     	
     }
     
-    function decrypt(event) {
+    function decrypt(file) {
     	
-    	try {
-    		
-    		var data = minizip.decrypt(new Uint8Array(event.target.result), password, 3, function(m) {
-    			
-    			var log = $("#loadingpage h4");
-    			
-    			log.append("<p>" + m + "</p>");
-    			
-    			if (log.children().length > 10) {
-    				
-    				log.find(':first-child').remove();
-    				
-    			}
-    			
-    		}, true);
-    		
-    		$("#loadingpage h1").text("Complete");
-    		
-    	} catch (e) {
-    		
-    		$("#loadingpage h1").text("Error");
-    		
-    		$("#loadingpage h3").text(e);
-    		
-    	}
-    	
-    	$("#loadingpage div").show();
-    	
-    	save(data);
+    	decryptO(file, password, 3, true, cb);
     	
     }
     
     var savedata;
     
-    function save(data) {
+    function cb(m, e, data) {
     	
-    	var blob = new Blob([data], { type: 'application/octet-binary' });
+    	if (m) {
+    		
+    		var log = $("#loadingpage h4");
+    		
+    		log.append("<p>" + m + "</p>");
+    		
+    		if (log.children().length > 8) {
+    			
+    			log.find(':first-child').remove();
+    			
+    		}
+    		
+    		return;
+    		
+    	}
     	
-    	savedata = blob;
+    	if (!data && !e) {
+    		
+    		return;
+    		
+    	}
+    	
+    	if (e) {
+    		
+    		$("#loadingpage h1").text("Error");
+    		
+    		$("#loadingpage p").text(e);
+    		
+    	} else {
+    		
+    		$("#loadingpage h1").text("Complete");
+    		
+    	}
+    	
+    	$("#loadingpage div").show();
+    	
+    	savedata = data;
     	
     }
     
@@ -271,7 +295,7 @@ html, body {
     	
     	$("#loadingpage h4").empty();
     	
-    	$("#loadingpage h3").empty();
+    	$("#loadingpage p").empty();
     	
     	savedata = undefined;
     	
@@ -279,7 +303,7 @@ html, body {
     
     $("#downloadfile").on("click", function() {
     	
-    	saveAs(savedata, "file.zip");
+    	saveAs(savedata);
     	
     });
     
