@@ -199,7 +199,17 @@ html, body {
     
     var encryptO = operative(function(file, password, perf, noBuf, cb) {
     	
-    	var fr = new FileReader();
+    	try {
+    		
+    		var fr = new FileReader();
+    		
+    	} catch (e) {
+    		
+    		cb(null, e);
+    		
+    		return;
+    		
+    	}
     	
     	fr.onload = function(event) {
     		
@@ -225,7 +235,17 @@ html, body {
     
     var decryptO = operative(function(file, password, perf, noBuf, cb) {
     	
-    	var fr = new FileReader();
+    	try {
+    		
+    		var fr = new FileReader();
+    		
+    	} catch (e) {
+    		
+    		cb(null, e);
+    		
+    		return;
+    		
+    	}
     	
     	fr.onload = function(event) {
     		
