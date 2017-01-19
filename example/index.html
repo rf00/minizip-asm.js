@@ -14,6 +14,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.2/js/jquery.iframe-transport.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.2/js/jquery.fileupload.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="5kasvniagci2z46"></script>
 </head>
 <style>
 html, body {
@@ -93,6 +94,7 @@ html, body {
             <div class="text-center">
               <button id="home" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-home"></span><br>Back Home</button>
               <button id="downloadfile" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-download-alt"></span><br>Download Zip</button>
+              <button id="savetodropbox" type="button" class="btn btn-default btn-lg text-center"><span class="bigicon glyphicon glyphicon-cloud"></span><br>Save To Dropbox</button>
             </div>
           </div>
         </div>
@@ -303,6 +305,8 @@ html, body {
     
     var savedata;
     
+    var url;
+    
     function cb(m, e, data) {
     	
     	if (m) {
@@ -337,11 +341,21 @@ html, body {
     		
     		$("#loadingpage h1").text("Complete");
     		
+    		savedata = data;
+    		
     	}
     	
-    	$("#loadingpage div").show();
+    	var fr = new FileReader();
     	
-    	savedata = data;
+    	fr.onload = function(event) {
+    		
+    		url = event.target.result;
+    		
+    		$("#loadingpage div").show();
+    		
+    	}
+    	
+    	fr.readAsDataURL(savedata);
     	
     }
     
@@ -366,6 +380,30 @@ html, body {
     $("#downloadfile").on("click", function() {
     	
     	saveAs(savedata);
+    	
+    });
+    
+    $("#savetodropbox").on("click", function() {
+    	
+    	$("#loadingpage h1").text("Uploading...");
+    	
+    	Dropbox.save(url, savedata.name, {
+    		
+    		success: function() {
+    			
+    			$("#loadingpage h1").text("Success");
+    			
+    		},
+    		
+    		error : function(e) {
+    			
+    			$("#loadingpage h1").text("Error");
+    			
+    			$("#loadingpage p").text(e);
+    			
+    		}
+    		
+    	});
     	
     });
     
