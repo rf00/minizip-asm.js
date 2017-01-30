@@ -4,7 +4,7 @@ var path = require('path');
 var env = require('yargs').argv.mode;
 
 var fileName = 'minizip-asm';
-var libraryName = 'minizip';
+var libraryName = 'Minizip';
 
 var plugins = [], outputFile;
 
@@ -16,7 +16,7 @@ if (env === 'build') {
 }
 
 var config = {
-  entry: __dirname + '/src/index.js',
+  entry: __dirname + '/lib/minizip.js',
   devtool: 'source-map',
   output: {
     path: __dirname + '/lib',
