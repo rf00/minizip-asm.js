@@ -1,8 +1,8 @@
 # minizip-asm.js
 
-[![npm version](https://badge.fury.io/js/minizip-asm.js.svg)](https://badge.fury.io/js/minizip-asm.js)
+[![npm version](https://badge.fury.io/js/minizip-asm.js.svg)](https://www.npmjs.com/package/minizip-asm.js)
 
-An emscripten port of minizip demo. Minizip is a higher level wrapper of zlib providing simple api for zip file compression and encryption.
+Minizip in javascript.
 
 ## Demo
 
@@ -10,181 +10,98 @@ An emscripten port of minizip demo. Minizip is a higher level wrapper of zlib pr
 
 ## Features
 
-* Zip and unzip.
-* Encrypt and decrypt too.
+* Zip file
+* Extract file
+* Work with password
 
 ## Installation
 
-[Download as zip](https://github.com/rf00/minizip-asm.js/archive/master.zip)
-
 ```html
-<script src="path/to/lib/minizip-asm.min.js"></script>
+<script src="https://raw.githubusercontent.com/rf00/minizip-asm.js/master/lib/minizip-asm.min.js"></script>
 ```
 
 ```js
 npm install minizip-asm.js
 
-var minizip = require('minizip-asm.js')
+var Minizip = require('minizip-asm.js');
 ```
 
 ## Getting started
 
 ```js
-var minizip = require('minizip-asm.js');
+var fs = require("fs");
 
-var fs = require('fs');
+var text = new Buffer("Abc~~~");
+var mz = new Minizip();
 
-var buffer = fs.readFileSync('example.js');
-
-// This is format of the folder to zip or return from unzip
-var contents = {
-	
-	'example.js': {
-		
-		isDir: false,
-		
-		// The data could be node buffer or Uint8Array
-		contents: buffer
-		
-	},
-	
-	'folderForBackup': {
-		
-		// If isDir is true, The contents of it contain a directory(keys) instead of file data
-		isDir: true,
-		
-		contents: {
-			
-			'example_copy.js': {
-				
-				isDir: false,
-				
-				contents: buffer
-				
-			},
-			
-			'example_copy2.js': {
-				
-				isDir: false,
-				
-				contents: buffer
-				
-			}
-			
-		}
-		
-	}
-	
-};
-
-// Optional password for creating an encrypted zip file
-var file = minizip.zip(contents, 'myPassword');
-
-fs.writeFileSync('file.zip', file);
-
-try {
-	
-	var unzipData = minizip.unzip(file);
-	
-} catch(e) {
-	
-	console.log(e);
-	
-	var unzipData = minizip.unzip(file, 'myPassword');
-	
-	// Walk through the folder
-	console.log(minizip.walk(unzipData));
-	
-}
-
-var encryptedFile = fs.readFileSync('file.zip');
-
-// Decrypt a zip file
-fs.writeFileSync('file.zip', minizip.decrypt(encryptedFile, 'myPassword'));
+mz.append("abc.txt", text, {password: "~~~"});
+fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 ```
 
 ## Usage
-### `minizip.zip(data[, password, perf, cbMessage, noBuf])`
 
-Return buffer of zip file data.
+### new Minizip(ArrayBuffer)
 
-`data` - A folder like the example
+Constructor for making a new zip file or opening from existing one.
 
-`password` - optional password
+* @`ArrayBuffer` {Buffer|Uint8Array} <optional> - It can be either Node.js Buffer read from zip file or Uint8Array in web browser.
 
-`perf` - optional performance setting, from 0 - 9, 0 means store only, 1 means compress faster, 9 means compress better, default 3
+* @ Return an instance of Minizip.
 
-`cbMessage` - optional callback, contains a message which is printf from minizip
+### mz.list(options)
 
-`noBuf` - optional, return raw Uint8Array if true
+List all files in Minizip with full filepath and have password or not.
 
-### `minizip.upzip(data[, password, cbMessage, noBuf])`
+* @`options` <optional>
 
-Return a folder like the example. It will throw error if a valid password is required.
+  * @`encoding` {"utf8"|"buffer"} <default="utf8"> - Since the filepath may not encode in utf8. It will be handy to have an ArrayBuffer to do detection on encoding.
 
-`data` - Buffer | Uint8Array
+* @ Return an `Array`. Something like this:
+    
+    ```js
+    [{
+      filepath: "haha/abc.txt",
+      crypt: true // (type: boolean)
+    }]
+    ```
 
-`password` - optional password
+### mz.extract(filepath, options)
 
-`cbMessage` - optional callback, contains a message which is printf from minizip
+Extract one file.
 
-`noBuf` - optional, return raw Uint8Array if true
+* @`filepath` {String|Buffer|Uint8Array} - Full filepath to extract.
 
-### `minizip.encrypt(data, password[, perf, cbMessage, noBuf])`
+* @`options` <optional>
 
-This is a wrapper function of unzip and zip which could convert an existing unencrypted zip file into an encrypted one. Return buffer of zip file data.
+  * @`encoding` {"utf8"|"buffer"} <default="buffer"> - File can return in text.
+  
+  * @`password` {String|Buffer|Uint8Array} <optional>
 
-`data` - Existing unencrypted Buffer | Uint8Array
+* @ Return a `Buffer`.
 
-`password` - password for encryption
+### mz.append(filepath, data, options)
 
-`perf` - optional performance setting, from 0 - 9, 0 means store only, 1 means compress faster, 9 means compress better, default 3
+Append one file.
 
-`cbMessage` - optional callback, contains a message which is printf from minizip
+* @`filepath` {String|Buffer|Uint8Array} - Full filepath to extract.
 
-`noBuf` - optional, return raw Uint8Array if true
+* @`data` {String|Buffer|Uint8Array} - File data.
 
-```js
-var zipfiledata = fs.readFileSync('unencryptedFile.zip');
+* @`options` <optional>
 
-var data = minizip.encrypt(zipfiledata, 'myPassword');
+  * @`password` {String|Buffer|Uint8Array} <optional>
+  
+  * @`compressLevel` {Number} <default=5> - 0: Store only. 1: Compress faster. 9: Compress better.
 
-fs.writeFileSync('encryptedFile.zip', data);
-```
+* @ Return nothing.
 
-### `minizip.decrypt(data, password[, perf, cbMessage, noBuf])`
+### mz.zip()
 
-This is a wrapper function of unzip and zip which could convert an existing encrypted zip file into an unencrypted one. Return buffer of zip file data. It will throw error if a valid password is required.
+Retrive zip file.
 
-`data` - Existing encrypted Buffer | Uint8Array
-
-`password` - password for decryption
-
-`perf` - optional performance setting, from 0 - 9, 0 means store only, 1 means compress faster, 9 means compress better, default 3
-
-`cbMessage` - optional callback, contains a message which is printf from minizip
-
-`noBuf` - optional, return raw Uint8Array if true
-
-### `minizip.walk(data, cb)`
-
-Walk through the folder return from unzip. Return an array contains file with its absolute path and contents.
-
-`data` - A folder like the example
-
-`cb` - optional callback, contains an object of isDir and contents
-
-```js
-var data = minizip.unzip(something);
-
-minizip.walk(data);
-// [{filepath: 'path/to/example.txt', contents: buffer | Uint8Array}, {filepath: 'path/to/example2.txt', contents: buffer | Uint8Array}, ...]
-```
+* @ Return a `Buffer`.
 
 ## Notice
 
-1. It is synchronize which means minizip will block the process and ui, It will be cool to put it in a web worker or fork a child process.
-2. The size of minizip-asm.js is around 1.3MB, minizip-asm.min.js is around 0.7MB.
-3. Sometimes fail silently.
-4. If the file is too big(>40MB), browser will fail.
-5. Contents of zip contain filename which is not ASCII, not very well.
+1. It is synchronize.
+2. The size of minizip-asm.min.js is around 0.5MB.
