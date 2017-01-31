@@ -1,7 +1,7 @@
 {
   "name": "minizip-asm.js",
-  "version": "0.0.6",
-  "description": "An emscripten port of minizip demo. Minizip is a higher level wrapper of zlib providing simple api for zip file compression and encryption.",
+  "version": "1.0.0",
+  "description": "Minizip in javascript. Demo: https://rf00.github.io/minizip-asm.js/example/",
   "main": "lib/minizip-asm.js",
   "scripts": {
     "build": "cd src && sh build.sh",
