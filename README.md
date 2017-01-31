@@ -40,7 +40,7 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 
 *Constructor for making a new zip file or opening from existing one.*
 
-* @`ArrayBuffer` {Buffer|Uint8Array} <optional> - It can be either Node.js Buffer read from zip file or Uint8Array in web browser.
+* @`ArrayBuffer` {Buffer|Uint8Array} \<optional> - It can be either Node.js Buffer read from zip file or Uint8Array in web browser.
 
 * @ Return an instance of Minizip.
 
@@ -48,9 +48,9 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 
 *List all files in Minizip with full filepath and have password or not.*
 
-* @`options` <optional>
+* @`options` \<optional>
 
-  * @`encoding` {"utf8"|"buffer"} <default="utf8"> - Since the filepath may not encode in utf8. It will be handy to have an ArrayBuffer to do detection on encoding.
+  * @`encoding` {"utf8"|"buffer"} \<default="utf8"> - Since the filepath may not encode in utf8. It will be handy to have an ArrayBuffer to do detection on encoding.
 
 * @ Return an `Array`. Something like this:
     
@@ -67,11 +67,11 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 
 * @`filepath` {String|Buffer|Uint8Array} - Full filepath to extract.
 
-* @`options` <optional>
+* @`options` \<optional>
 
-  * @`encoding` {"utf8"|"buffer"} <default="buffer"> - File can return in text.
+  * @`encoding` {"utf8"|"buffer"} \<default="buffer"> - File can return in text.
   
-  * @`password` {String|Buffer|Uint8Array} <optional>
+  * @`password` {String|Buffer|Uint8Array} \<optional>
 
 * @ Return a `Buffer`.
 
@@ -83,11 +83,11 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 
 * @`data` {String|Buffer|Uint8Array} - File data.
 
-* @`options` <optional>
+* @`options` \<optional>
 
-  * @`password` {String|Buffer|Uint8Array} <optional>
+  * @`password` {String|Buffer|Uint8Array} \<optional>
   
-  * @`compressLevel` {Number} <default=5> - 0: Store only. 1: Compress faster. 9: Compress better.
+  * @`compressLevel` {Number} \<default=5> - 0: Store only. 1: Compress faster. 9: Compress better.
 
 * @ Return nothing.
 
