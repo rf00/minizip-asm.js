@@ -2,11 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/minizip-asm.js.svg)](https://www.npmjs.com/package/minizip-asm.js)
 
-Minizip in javascript.
-
-## Demo
-
-[Demo of encrypt and decrypt existing zip file](https://rf00.github.io/minizip-asm.js/example/)
+Minizip in javascript. Demo: [https://rf00.github.io/minizip-asm.js/example/](https://rf00.github.io/minizip-asm.js/example/)
 
 ## Features
 
@@ -42,7 +38,7 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 
 ### new Minizip(ArrayBuffer)
 
-Constructor for making a new zip file or opening from existing one.
+*Constructor for making a new zip file or opening from existing one.*
 
 * @`ArrayBuffer` {Buffer|Uint8Array} <optional> - It can be either Node.js Buffer read from zip file or Uint8Array in web browser.
 
@@ -50,7 +46,7 @@ Constructor for making a new zip file or opening from existing one.
 
 ### mz.list(options)
 
-List all files in Minizip with full filepath and have password or not.
+*List all files in Minizip with full filepath and have password or not.*
 
 * @`options` <optional>
 
@@ -67,7 +63,7 @@ List all files in Minizip with full filepath and have password or not.
 
 ### mz.extract(filepath, options)
 
-Extract one file.
+*Extract one file.*
 
 * @`filepath` {String|Buffer|Uint8Array} - Full filepath to extract.
 
@@ -81,7 +77,7 @@ Extract one file.
 
 ### mz.append(filepath, data, options)
 
-Append one file.
+*Append one file.*
 
 * @`filepath` {String|Buffer|Uint8Array} - Full filepath to extract.
 
@@ -97,7 +93,7 @@ Append one file.
 
 ### mz.zip()
 
-Retrive zip file.
+*Retrive zip file.*
 
 * @ Return a `Buffer`.
 
