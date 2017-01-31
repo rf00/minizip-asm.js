@@ -26,7 +26,7 @@ html, body {
 	position: fixed;
 }
 #panel {
-	opacity: 0.5;
+	opacity: 1;
 }
 .bigicon {
 	font-size: 50px;
@@ -122,14 +122,6 @@ html, body {
     	
     	var panel = $("#panel");
     	
-    	var atLeast = window.innerHeight * 0.8;
-    	
-    	if (panel.height() < atLeast) {
-    		
-    		panel.height(atLeast);
-    		
-    	}
-    	
     }
     
     function makeBG() {
@@ -173,11 +165,11 @@ html, body {
     			
     			if (todo == "#encrypt") {
     				
-    				encrypt(file, password, 3, true, cb);
+    				encrypt(file, password, cb);
     				
     			} else {
     				
-    				decrypt(file, password, 3, true, cb);
+    				decrypt(file, password, cb);
     				
     			}
     			
@@ -187,11 +179,11 @@ html, body {
     		
     		if (todo == "#encrypt") {
     			
-    			encryptO(file, password, 3, true, cb);
+    			encryptO(file, password, cb);
     			
     		} else {
     			
-    			decryptO(file, password, 3, true, cb);
+    			decryptO(file, password, cb);
     			
     		}
     		
@@ -199,7 +191,7 @@ html, body {
     	
     }
     
-    var encryptO = operative(function(file, password, perf, noBuf, cb) {
+    var encryptO = operative(function(file, password, cb) {
     	
     	var fr = new FileReader();
     	
@@ -207,9 +199,19 @@ html, body {
     		
     		try {
     			
-    			var data = minizip.encrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			var zip = new Minizip(new Uint8Array(event.target.result));
     			
-    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			var newZip = new Minizip();
+    			
+    			zip.list().forEach(function(o) {
+    				
+    				newZip.append(o.filepath, zip.extract(o.filepath), {password: password});
+    				
+    				cb("Processing: " + o.filepath);
+    				
+    			});
+    			
+    			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
     			cb(null, null, file);
     			
@@ -225,7 +227,7 @@ html, body {
     	
     }, ["../lib/minizip-asm.min.js"]);
     
-    var decryptO = operative(function(file, password, perf, noBuf, cb) {
+    var decryptO = operative(function(file, password, cb) {
     	
     	var fr = new FileReader();
     	
@@ -233,9 +235,19 @@ html, body {
     		
     		try {
     			
-    			var data = minizip.decrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			var zip = new Minizip(new Uint8Array(event.target.result));
     			
-    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			var newZip = new Minizip();
+    			
+    			zip.list().forEach(function(o) {
+    				
+    				newZip.append(o.filepath, zip.extract(o.filepath, {password: password}));
+    				
+    				cb("Processing: " + o.filepath);
+    				
+    			});
+    			
+    			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
     			cb(null, null, file);
     			
@@ -251,7 +263,7 @@ html, body {
     	
     }, ["../lib/minizip-asm.min.js"]);
     
-    function encrypt(file, password, perf, noBuf, cb) {
+    function encrypt(file, password, cb) {
     	
     	var fr = new FileReader();
     	
@@ -259,9 +271,19 @@ html, body {
     		
     		try {
     			
-    			var data = minizip.encrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			var zip = new Minizip(new Uint8Array(event.target.result));
     			
-    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			var newZip = new Minizip();
+    			
+    			zip.list().forEach(function(o) {
+    				
+    				newZip.append(o.filepath, zip.extract(o.filepath), {password: password});
+    				
+    				cb("Processing: " + o.filepath);
+    				
+    			});
+    			
+    			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
     			cb(null, null, file);
     			
@@ -277,7 +299,7 @@ html, body {
     	
     }
     
-    function decrypt(file, password, perf, noBuf, cb) {
+    function decrypt(file, password, cb) {
     	
     	var fr = new FileReader();
     	
@@ -285,9 +307,19 @@ html, body {
     		
     		try {
     			
-    			var data = minizip.decrypt(new Uint8Array(event.target.result), password, perf, cb, noBuf);
+    			var zip = new Minizip(new Uint8Array(event.target.result));
     			
-    			var file = new File([data], "file.zip", { type: 'application/octet-binary' });
+    			var newZip = new Minizip();
+    			
+    			zip.list().forEach(function(o) {
+    				
+    				newZip.append(o.filepath, zip.extract(o.filepath, {password: password}));
+    				
+    				cb("Processing: " + o.filepath);
+    				
+    			});
+    			
+    			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
     			cb(null, null, file);
     			
