@@ -1,11 +1,12 @@
 	var buf;
 	var len;
 	var SIZE_T = 4;
+	var BYTE = 1;
+	var SIZE_FILENAME = 32767 + 1;
 	var ufListLen = Module._malloc(SIZE_T);
 	Module.HEAPU8.set(Buffer.alloc(SIZE_T), ufListLen);
-	var INT = 1;
-	var reterr = Module._malloc(INT);
-	Module.HEAPU8.set(Buffer.alloc(INT), reterr);
+	var reterr = Module._malloc(BYTE);
+	Module.HEAPU8.set(Buffer.alloc(BYTE), reterr);
 	
 	if (zipfile) {
 		if (!("length" in zipfile)) {
@@ -15,6 +16,13 @@
 		buf = Module._malloc(len);
 		Module.HEAPU8.set(zipfile, buf);
 	}
+	
+	var filename = Module._malloc(SIZE_FILENAME);
+	Module.HEAPU8.set(Buffer.alloc(SIZE_FILENAME), filename);
+	var fileBufSize = Module._malloc(SIZE_T);
+	Module.HEAPU8.set(Buffer.alloc(SIZE_T), fileBufSize);
+	var newLen = Module._malloc(SIZE_T);
+	Module.HEAPU8.set(Buffer.alloc(SIZE_T), newLen);
 	
 	this.list = function(options) {
 		if (!buf) {
@@ -34,16 +42,16 @@
 		var encoding = options.encoding;
 		
 		Module.HEAPU8.fill(0, ufListLen, ufListLen + SIZE_T);
-		Module.HEAPU8.fill(0, reterr, reterr + INT);
+		Module.HEAPU8.fill(0, reterr, reterr + BYTE);
 		
 		var ufList = Module.ccall("list", "number", ["number", "number", "number", "number"], [buf, len, ufListLen, reterr]);
-		var str = Module.Pointer_stringify(ufList);
 		if (Module.HEAPU8[reterr]) {
-			throw new Error(str);
+			throw new Error(Module.Pointer_stringify(ufList));
 		}
-		Module._free(ufList);
 		
-		var obj = JSON.parse(str);
+		var size = Buffer.from(Module.HEAPU8.subarray(ufListLen, ufListLen + SIZE_T)).readUInt32LE();
+		var obj = JSON.parse(Buffer.from(Module.HEAPU8.subarray(ufList, ufList + size)));
+		Module._free(ufList);
 		var newObj = [];
 		for (var key in obj) {
 			var o = {
@@ -70,6 +78,9 @@
 			throw new Error("Can't get buffer length");
 		}
 		filepath = Buffer.from(filepath);
+		if (filepath.length >= SIZE_FILENAME) {
+			throw new Error("Exceed max filename length");
+		}
 		var _options = {
 			encoding: "buffer",
 			password: null
@@ -80,31 +91,30 @@
 		options = _options;
 		var encoding = options.encoding;
 		
-		Module.HEAPU8.fill(0, reterr, reterr + INT);
-		var filename = Module._malloc(filepath.length);
+		Module.HEAPU8.fill(0, reterr, reterr + BYTE);
+		Module.HEAPU8.fill(0, filename, filename + SIZE_FILENAME);
 		Module.HEAPU8.set(filepath, filename);
 		var password = null;
 		if (options.password) {
 			var _password = Buffer.from(options.password);
-			password = Module._malloc(_password.length);
+			password = Module._malloc(_password.length + BYTE);
+			Module.HEAPU8.fill(0, password, password + _password.length + BYTE);
 			Module.HEAPU8.set(_password, password);
 		}
-		var fileBufSize = Module._malloc(SIZE_T);
-		Module.HEAPU8.set(Buffer.alloc(SIZE_T), fileBufSize);
+		Module.HEAPU8.fill(0, fileBufSize, fileBufSize + SIZE_T);
+		Module.HEAPU8.fill(0, newLen, newLen + SIZE_T);
 		
-		var fileBuf = Module.ccall('extract', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [buf, len, filename, password, fileBufSize, reterr]);
+		var fileBuf = Module.ccall('extract', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [buf, len, filename, password, fileBufSize, newLen, reterr]);
 		if (Module.HEAPU8[reterr]) {
 			throw new Error(Module.Pointer_stringify(fileBuf));
 		}
 		var size = Buffer.from(Module.HEAPU8.subarray(fileBufSize, fileBufSize + SIZE_T)).readUInt32LE();
 		var buffer = Buffer.from(Module.HEAPU8.subarray(fileBuf, fileBuf + size));
 		
-		Module._free(filename);
+		len = Buffer.from(Module.HEAPU8.subarray(newLen, newLen + SIZE_T)).readUInt32LE();
 		if (password) {
 			Module._free(password);
 		}
-		Module._free(fileBufSize);
-		Module._free(fileBuf);
 		
 		if (!(encoding == "utf8" || encoding == "utf-8" || encoding == "buffer")) {
 			throw new Error("Unknown Encoding");
@@ -123,6 +133,9 @@
 			throw new Error("Can't get buffer length");
 		}
 		filepath = Buffer.from(filepath);
+		if (filepath.length >= SIZE_FILENAME) {
+			throw new Error("Exceed max filename length");
+		}
 		data = Buffer.from(data);
 		var _options = {
 			password: null,
@@ -133,15 +146,15 @@
 		}
 		options = _options;
 		
-		Module.HEAPU8.fill(0, reterr, reterr + INT);
-		var newLen = Module._malloc(SIZE_T);
-		Module.HEAPU8.set(Buffer.alloc(SIZE_T), newLen);
-		var filename = Module._malloc(filepath.length);
+		Module.HEAPU8.fill(0, reterr, reterr + BYTE);
+		Module.HEAPU8.fill(0, newLen, newLen + SIZE_T);
+		Module.HEAPU8.fill(0, filename, filename + SIZE_FILENAME);
 		Module.HEAPU8.set(filepath, filename);
 		var password = null;
 		if (options.password) {
 			var _password = Buffer.from(options.password);
-			password = Module._malloc(_password.length);
+			password = Module._malloc(_password.length + BYTE);
+			Module.HEAPU8.fill(0, password, password + _password.length + BYTE);
 			Module.HEAPU8.set(_password, password);
 		}
 		var fileLen = data.length;
@@ -156,8 +169,6 @@
 		buf = zipmemBase;
 		len = Buffer.from(Module.HEAPU8.subarray(newLen, newLen + SIZE_T)).readUInt32LE();
 		
-		Module._free(newLen);
-		Module._free(filename);
 		if (password) {
 			Module._free(password);
 		}
@@ -165,6 +176,12 @@
 	}
 	
 	this.zip = function() {
+		if (!buf) {
+			throw new Error("Blank file");
+		}
+		if (!len) {
+			throw new Error("Can't get buffer length");
+		}
 		return Buffer.from(Module.HEAPU8.subarray(buf, buf + len));
 	}
 }

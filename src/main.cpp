@@ -2,17 +2,19 @@
 #include "unzip.h"
 #include "ioapi_mem.h"
 
-#define SIZE_FILENAME 553
+#define SIZE_FILENAME 32767 + 1
+#define SIZE_STR 64
 
-extern "C" char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
-	char* ufList = NULL;
+extern "C" {
+
+char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
+	char* ufList = (char*)calloc(SIZE_STR, sizeof(ufList));
 	unzFile uf = NULL;
 	zlib_filefunc_def filefunc32 = {0};
 	ourmemory_t unzmem = {0};
 	int err = UNZ_OK;
 	*reterr = 1;
 	
-	ufList = (char*)malloc(SIZE_FILENAME);
 	strcat(ufList, "[");
 	
 	unzmem.size = len;
@@ -33,10 +35,10 @@ extern "C" char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
 	}
 	
 	do {
-		char filename_inzip[256] = {0};
+		char filename_inzip[SIZE_FILENAME] = {0};
 		unz_file_info64 file_info = {0};
 		int i = 0;
-		char filename_hex[511] = {0};
+		char filename_hex[SIZE_FILENAME*2] = {0};
 		char* p = filename_hex;
 		
 		err = unzGetCurrentFileInfo64(uf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
@@ -45,12 +47,14 @@ extern "C" char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
 			return (char*)"error with zipfile in unzGetCurrentFileInfo";
 		}
 		
+		ufList = (char*)realloc(ufList, (strlen(filename_inzip)*2+strlen(ufList)+SIZE_STR)*sizeof(ufList));
+		
 		strcat(ufList, "{\"filename_inzip\":\"");
 		
 		for (i = 0; i < strlen(filename_inzip); i++) {
 			p += sprintf(p, "%02x", filename_inzip[i] & 0xFF);
 		}
-		strcat(ufList, &filename_hex[0]);
+		strcat(ufList,&filename_hex[0]);
 		strcat(ufList, "\",");
 		
 		strcat(ufList, "\"charCrypt\":");
@@ -61,9 +65,6 @@ extern "C" char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
 		strcat(ufList, "},");
 		
 		err = unzGoToNextFile(uf);
-		if (err != UNZ_END_OF_LIST_OF_FILE && err == UNZ_OK) {
-			ufList = (char*)realloc(ufList, SIZE_FILENAME+sizeof(ufList));
-		}
 	} while (err == UNZ_OK);
 	
 	if (err != UNZ_END_OF_LIST_OF_FILE && err != UNZ_OK) {
@@ -71,6 +72,7 @@ extern "C" char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
 		return (char*)"error with zipfile in unzGoToNextFile";
 	}
 	
+	unzClose(uf);
 	ufList[strlen(ufList)-1] = 0;
 	strcat(ufList, "]");
 	*ufListLen = strlen(ufList);
@@ -78,7 +80,7 @@ extern "C" char* list(char* buf, size_t len, size_t* ufListLen, int* reterr) {
 	return ufList;
 }
 
-extern "C" char* extract(char* buf, size_t len, char* filename, char* password, size_t* fileBufSize, int* reterr) {
+char* extract(char* buf, size_t len, char* filename, char* password, size_t* fileBufSize, size_t* newLen, int* reterr) {
 	char* fileBuf= NULL;
 	unzFile uf = NULL;
 	zlib_filefunc_def filefunc32 = {0};
@@ -129,11 +131,13 @@ extern "C" char* extract(char* buf, size_t len, char* filename, char* password, 
 		return (char*)"error with zipfile in unzCloseCurrentFile";
 	}
 	
+	unzClose(uf);
 	*reterr = 0;
+	*newLen = unzmem.size;
 	return fileBuf;
 }
 
-extern "C" char* append(int newBuf, char* buf, size_t len, size_t* newLen, char* filename, char* password, char* fileBuf, size_t fileLen, int opt_compress_level, int* reterr) {
+char* append(int newBuf, char* buf, size_t len, size_t* newLen, char* filename, char* password, char* fileBuf, size_t fileLen, int opt_compress_level, int* reterr) {
 	zipFile zf = NULL;
 	zlib_filefunc_def filefunc32 = {0};
 	ourmemory_t zipmem = {0};
@@ -158,8 +162,9 @@ extern "C" char* append(int newBuf, char* buf, size_t len, size_t* newLen, char*
 		return (char*)"error opening zipfile in zipOpen3";
 	}
 	
-	if ((password != NULL) && (err == ZIP_OK))
+	if ((password != NULL) && (err == ZIP_OK)) {
 		crc32(crcFile, (const Bytef*)fileBuf, fileLen);
+	}
 	
 	zip64 = (fileLen >= 0xffffffff);
 	
@@ -168,22 +173,28 @@ extern "C" char* append(int newBuf, char* buf, size_t len, size_t* newLen, char*
 		savefilenameinzip++;
 	
 	err = zipOpenNewFileInZip3_64(zf, savefilenameinzip, NULL, NULL, 0, NULL, 0, NULL, (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level,0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
-	if (err != ZIP_OK)
+	if (err != ZIP_OK) {
 		return (char*)"error in opening in zipfile";
+	}
 	
 	err = zipWriteInFileInZip(zf, fileBuf, fileLen);
-	if (err < 0)
+	if (err < 0) {
 		return (char*)"error in writing in the zipfile";
+	}
 	
 	err = zipCloseFileInZip(zf);
-	if (err != ZIP_OK)
+	if (err != ZIP_OK) {
 		return (char*)"error in closing in the zipfile";
+	}
 	
 	err = zipClose(zf, NULL);
-	if (err != ZIP_OK)
+	if (err != ZIP_OK) {
 		return (char*)"error in closing";
+	}
 	
 	*reterr = 0;
 	*newLen = zipmem.size;
 	return zipmem.base;
+}
+
 }
