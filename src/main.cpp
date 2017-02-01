@@ -126,11 +126,7 @@ char* extract(char* buf, size_t len, char* filename, char* password, size_t* fil
 	*fileBufSize = (size_t)file_info.uncompressed_size;
 	
 	err = unzCloseCurrentFile(uf);
-	if (err == UNZ_CRCERROR) {
-		free(fileBuf);
-		return (char*)"error UNZ_CRCERROR with zipfile in unzCloseCurrentFile";
-	}
-	if (err != UNZ_OK) {
+	if ((err != UNZ_CRCERROR) && (err != UNZ_OK)) {
 		free(fileBuf);
 		return (char*)"error with zipfile in unzCloseCurrentFile";
 	}
