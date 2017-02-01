@@ -203,11 +203,11 @@ html, body {
     			
     			var newZip = new Minizip();
     			
-    			zip.list().forEach(function(o) {
+    			zip.list({encoding: "buffer"}).forEach(function(o) {
     				
     				newZip.append(o.filepath, zip.extract(o.filepath), {password: password});
     				
-    				cb("Processing: " + o.filepath);
+    				cb("Processing: " + o.filepath.toString());
     				
     			});
     			
@@ -239,11 +239,11 @@ html, body {
     			
     			var newZip = new Minizip();
     			
-    			zip.list().forEach(function(o) {
+    			zip.list({encoding: "buffer"}).forEach(function(o) {
     				
     				newZip.append(o.filepath, zip.extract(o.filepath, {password: password}));
     				
-    				cb("Processing: " + o.filepath);
+    				cb("Processing: " + o.filepath.toString());
     				
     			});
     			
@@ -275,11 +275,11 @@ html, body {
     			
     			var newZip = new Minizip();
     			
-    			zip.list().forEach(function(o) {
+    			zip.list({encoding: "buffer"}).forEach(function(o) {
     				
     				newZip.append(o.filepath, zip.extract(o.filepath), {password: password});
     				
-    				cb("Processing: " + o.filepath);
+    				cb("Processing: " + o.filepath.toString());
     				
     			});
     			
@@ -311,11 +311,11 @@ html, body {
     			
     			var newZip = new Minizip();
     			
-    			zip.list().forEach(function(o) {
+    			zip.list({encoding: "buffer"}).forEach(function(o) {
     				
     				newZip.append(o.filepath, zip.extract(o.filepath, {password: password}));
     				
-    				cb("Processing: " + o.filepath);
+    				cb("Processing: " + o.filepath.toString());
     				
     			});
     			
