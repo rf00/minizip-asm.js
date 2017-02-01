@@ -100,4 +100,4 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 ## Notice
 
 1. It is synchronize.
-2. The size of minizip-asm.min.js is around 0.5MB.
+2. The size of minizip-asm.min.js is around 0.6MB.
