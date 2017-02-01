@@ -1,13 +1,14 @@
 {
   "name": "minizip-asm.js",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Minizip in javascript. Demo: https://rf00.github.io/minizip-asm.js/example/",
   "main": "lib/minizip-asm.min.js",
   "scripts": {
     "build": "cd src && sh build.sh",
     "finalbuild": "npm install && webpack --mode=build",
     "dev": "webpack --progress --colors --watch --mode=dev",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "npm run test-node",
+    "test-node": "mocha --colors ./test/*.js"
   },
   "devDependencies": {
     "babel": "6.3.13",
