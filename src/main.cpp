@@ -126,6 +126,10 @@ char* extract(char* buf, size_t len, char* filename, char* password, size_t* fil
 	*fileBufSize = (size_t)file_info.uncompressed_size;
 	
 	err = unzCloseCurrentFile(uf);
+	if (err == UNZ_CRCERROR) {
+		free(fileBuf);
+		return (char*)"error UNZ_CRCERROR with zipfile in unzCloseCurrentFile";
+	}
 	if (err != UNZ_OK) {
 		free(fileBuf);
 		return (char*)"error with zipfile in unzCloseCurrentFile";
@@ -142,7 +146,7 @@ char* append(int newBuf, char* buf, size_t len, size_t* newLen, char* filename, 
 	zlib_filefunc_def filefunc32 = {0};
 	ourmemory_t zipmem = {0};
 	int err = UNZ_OK;
-	unsigned long crcFile = 0;
+	uint32_t crcFile = 0;
 	int zip64 = 0;
 	const char *savefilenameinzip;
 	*reterr = 1;
@@ -163,7 +167,7 @@ char* append(int newBuf, char* buf, size_t len, size_t* newLen, char* filename, 
 	}
 	
 	if ((password != NULL) && (err == ZIP_OK)) {
-		crc32(crcFile, (const Bytef*)fileBuf, fileLen);
+		crc32(crcFile, (const unsigned char*)fileBuf, fileLen);
 	}
 	
 	zip64 = (fileLen >= 0xffffffff);
