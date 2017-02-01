@@ -9,7 +9,7 @@ var libraryName = 'Minizip';
 var plugins = [], outputFile;
 
 if (env === 'build') {
-  plugins.push(new UglifyJsPlugin({ minimize: true }));
+  plugins.push(new UglifyJsPlugin({ minimize: true, output: {comments: false} }));
   outputFile = fileName + '.min.js';
 } else {
   outputFile = fileName + '.js';
