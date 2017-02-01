@@ -1,3 +1,4 @@
+require("core-js");
 var Buffer = require("buffer/").Buffer;
 
 function Minizip(zipfile) {

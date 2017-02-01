@@ -23,7 +23,8 @@
     "mocha": "2.3.4",
     "webpack": "1.12.9",
     "yargs": "3.32.0",
-    "buffer": "5.0.2"
+    "buffer": "5.0.2",
+    "core-js": "2.4.1"
   },
   "repository": {
     "type": "git",
