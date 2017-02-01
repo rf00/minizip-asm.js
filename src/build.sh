@@ -37,7 +37,7 @@ emcc zip.c -o zip.o -O -I../.. -DHAVE_AES
 emcc unzip.c -o unzip.o -O -I../.. -DHAVE_AES
 emcc ioapi_mem.c -o ioapi_mem.o -O -I../.. -DHAVE_AES
 emcc ioapi.c -o ioapi.o -O -I../.. -DHAVE_AES
-emcc -O -I../.. -DHAVE_AES -o ../../../lib/minizip.js main.cpp --memory-init-file 0 -s ALLOW_MEMORY_GROWTH=1 -s NO_FILESYSTEM=1 -s EXPORTED_FUNCTIONS="['_list', '_extract', '_append']" --pre-js main_pre.js --post-js main_post.js zip.o unzip.o ioapi.o ioapi_mem.o ../../libz.a libaes.o -Oz
+emcc -O -I../.. -DHAVE_AES -o ../../../lib/minizip.js main.cpp --memory-init-file 0 -s ALLOW_MEMORY_GROWTH=1 -s NO_FILESYSTEM=0 -s EXPORTED_FUNCTIONS="['_list', '_extract', '_append']" --pre-js main_pre.js --post-js main_post.js zip.o unzip.o ioapi.o ioapi_mem.o ../../libz.a libaes.o -Oz
 
 echo "Finished Build!\nPlease type command 'npm run finalbuild' to complete build."
 cd ../../..
