@@ -30,7 +30,7 @@ var fs = require("fs");
 var text = new Buffer("Abc~~~");
 var mz = new Minizip();
 
-mz.append("abc.txt", text, {password: "~~~"});
+mz.append("haha/abc.txt", text, {password: "~~~"});
 fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 ```
 
