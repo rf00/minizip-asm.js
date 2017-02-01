@@ -58,6 +58,10 @@
 				filepath: Buffer.from(obj[key].filename_inzip, "hex"),
 				crypt: obj[key].charCrypt
 			};
+			// Excluding blank folder
+			if (o.filepath[o.filepath.length-1] == 0x2F) {
+				continue;
+			}
 			if (!(encoding == "utf8" || encoding == "utf-8" || encoding == "buffer")) {
 				throw new Error("Unknown Encoding");
 			}
