@@ -1,4 +1,4 @@
-if (typeof module !== "undefined" && modele.exports) {
+if (typeof module !== "undefined" && module.exports) {
 	var chai = require("chai");
 	var Minizip = require("../../lib/minizip-asm.min.js");
 	
