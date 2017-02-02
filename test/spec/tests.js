@@ -1,6 +1,9 @@
 if (exports) {
 	var chai = require("chai");
 	var Minizip = require("../../lib/minizip-asm.min.js");
+	
+	chai.expect();
+	var expect = chai.expect;
 }
 
 describe("Given an instance of Minizip", function() {
