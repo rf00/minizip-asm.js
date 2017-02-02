@@ -1,13 +1,12 @@
 {
   "name": "minizip-asm.js",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Minizip in javascript. Demo: https://rf00.github.io/minizip-asm.js/example/",
   "main": "lib/minizip-asm.min.js",
   "scripts": {
     "build": "cd src && sh build.sh",
     "finalbuild": "npm install && webpack --mode=build",
     "dev": "webpack --progress --colors --watch --mode=dev",
-    "test": "grunt",
     "test-node": "mocha --colors ./test/spec/*.js"
   },
   "devDependencies": {
@@ -24,9 +23,7 @@
     "webpack": "1.12.9",
     "yargs": "3.32.0",
     "buffer": "5.0.2",
-    "core-js": "2.4.1",
-    "grunt": "0.4.5",
-    "grunt-saucelabs": "*"
+    "core-js": "2.4.1"
   },
   "repository": {
     "type": "git",
