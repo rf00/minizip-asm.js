@@ -21,15 +21,6 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    connect: {
-      server: {
-        options: {
-          base: '',
-          port: 9999
-        }
-      }
-    },
-
     'saucelabs-mocha': {
       all: {
         options: {
@@ -49,8 +40,7 @@ module.exports = function (grunt) {
     watch: {}
   });
 
-  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-saucelabs');
 
-  grunt.registerTask('default', ['connect', 'saucelabs-mocha']);
+  grunt.registerTask('default', ['saucelabs-mocha']);
 };
