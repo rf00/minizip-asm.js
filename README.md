@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/rf00/minizip-asm.js.svg?branch=master)](https://travis-ci.org/rf00/minizip-asm.js) [![npm version](https://badge.fury.io/js/minizip-asm.js.svg)](https://www.npmjs.com/package/minizip-asm.js)
 
-Minizip in javascript. Demo: [https://rf00.github.io/minizip-asm.js/example/](https://rf00.github.io/minizip-asm.js/example/)
+Minizip in javascript. Work with password. Demo: [https://rf00.github.io/minizip-asm.js/example/](https://rf00.github.io/minizip-asm.js/example/)
 
 ## Features
 
