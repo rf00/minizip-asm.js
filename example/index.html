@@ -210,6 +210,12 @@ html, body {
     				cb("Processing: " + o.filepath.toString());
     				
     			});
+			
+			if (zip.list().length != newZip.list().length) {
+				
+				cb("Error: Some file is fail to append or extract!");
+				
+			}
     			
     			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
@@ -247,6 +253,12 @@ html, body {
     				
     			});
     			
+    			if (zip.list().length != newZip.list().length) {
+				
+				cb("Error: Some file is fail to append or extract!");
+				
+			}
+    			
     			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
     			cb(null, null, file);
@@ -283,6 +295,12 @@ html, body {
     				
     			});
     			
+    			if (zip.list().length != newZip.list().length) {
+				
+				cb("Error: Some file is fail to append or extract!");
+				
+			}
+    			
     			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
     			cb(null, null, file);
@@ -318,6 +336,12 @@ html, body {
     				cb("Processing: " + o.filepath.toString());
     				
     			});
+    			
+    			if (zip.list().length != newZip.list().length) {
+				
+				cb("Error: Some file is fail to append or extract!");
+				
+			}
     			
     			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
     			
