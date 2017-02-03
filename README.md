@@ -100,5 +100,4 @@ fs.writeFileSync("abc.zip", new Buffer(mz.zip()));
 ## Notice
 
 1. It is synchronize.
-2. The size of minizip-asm.min.js is around 0.6MB.
-3. Browser require >= IE11.
+2. Browser require >= IE11.
