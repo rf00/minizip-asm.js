@@ -1,6 +1,6 @@
 {
   "name": "minizip-asm.js",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Minizip in javascript. Work with password. Demo: https://rf00.github.io/minizip-asm.js/example/",
   "main": "lib/minizip-asm.min.js",
   "scripts": {
