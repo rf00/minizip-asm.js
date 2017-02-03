@@ -215,6 +215,8 @@ html, body {
 				
 				cb(null, "Error: Some file is fail to append or extract!");
 				
+				return;
+				
 			}
     			
     			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
@@ -256,6 +258,8 @@ html, body {
     			if (zip.list().length != newZip.list().length) {
 				
 				cb(null, "Error: Some file is fail to append or extract!");
+				
+				return;
 				
 			}
     			
@@ -299,6 +303,8 @@ html, body {
 				
 				cb(null, "Error: Some file is fail to append or extract!");
 				
+				return;
+				
 			}
     			
     			var file = new File([newZip.zip()], "file.zip", { type: 'application/octet-binary' });
@@ -340,6 +346,8 @@ html, body {
     			if (zip.list().length != newZip.list().length) {
 				
 				cb(null, "Error: Some file is fail to append or extract!");
+				
+				return;
 				
 			}
     			
